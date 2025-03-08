@@ -54,6 +54,8 @@ const Home = () => {
           text: responseData.message,
           icon: "success"
         });
+
+        reset();
       }
       else {
         throw responseData.message;
