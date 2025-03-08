@@ -12,6 +12,8 @@ type FormTicket = {
 }
 
 const Home = () => {
+  const baseURLAPI = process.env.NEXT_PUBLIC_BASE_URL_API;
+
   const {
 		register,
 		handleSubmit,
@@ -31,6 +33,31 @@ const Home = () => {
   const handleSubmitTicket = async (data: FormTicket) => {
     try {
       setLoadingSubmit(true);
+      
+      const response = await fetch(baseURLAPI + "ticket_create", {
+        method: "POST",
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify({
+          "name": data.name,
+          "description": data.description,
+          "client_name": data.clientName,
+          "client_email": data.clientEmail
+        })
+      });
+      const responseData = await response.json(); 
+      
+      if (response.status == 201) {
+        await Swal.fire({
+          title: "Success!",
+          text: responseData.message,
+          icon: "success"
+        });
+      }
+      else {
+        throw responseData.message;
+      }
     }
     catch (error) {
       await Swal.fire({
@@ -47,7 +74,7 @@ const Home = () => {
 	return (
     <div>
       <Stack minHeight={"100vh"} alignItems={"center"} justifyContent={"center"} py={5}>
-        <Box maxWidth={{ md: 500, xs: 280 }} width={{ md: 500, xs: 280 }}>
+        <Box maxWidth={{ sm: 500, xs: 280 }} width={{ sm: 500, xs: 280 }}>
           <Typography fontSize={20} fontWeight={"bold"} textAlign="center" mb={3}>
             Submit a Trello Issue
           </Typography>
@@ -131,9 +158,9 @@ const Home = () => {
                 )}
               </FormControl>
 
-              <Button type="submit" variant="contained" size="medium">
+              <Button type="submit" variant="contained" size="medium" disabled={loadingSubmit}>
                 <Typography fontWeight="bold" fontSize="14px">
-                  Submit
+                  {loadingSubmit ? "Loading.." : "Submit"}
                 </Typography>
               </Button>
             </Stack>
