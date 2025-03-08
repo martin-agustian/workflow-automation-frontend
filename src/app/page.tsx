@@ -46,13 +46,15 @@ const Home = () => {
           "client_email": data.clientEmail
         })
       });
+
       const responseData = await response.json(); 
       
       if (response.status == 201) {
         await Swal.fire({
           title: "Success!",
           text: responseData.message,
-          icon: "success"
+          icon: "success",
+          confirmButtonColor: "#1876D2"
         });
 
         reset();
@@ -64,8 +66,17 @@ const Home = () => {
     catch (error) {
       await Swal.fire({
         title: "Error!",
-        text: error as string,
-        icon: "error"
+        html: error instanceof Object ? (`
+          <ul>
+            ${Object.entries(error).map((value: any[]) => (
+              `<li>
+                ${value[0]} : ${value[1].join(', ')}
+              </li>`
+            )).join('')}
+          </ul>
+        `) : error as string,
+        icon: "error",
+        confirmButtonColor: "#1876D2"
       });
     }
     finally {
@@ -79,7 +90,7 @@ const Home = () => {
         <Box maxWidth={{ sm: 500, xs: 280 }} width={{ sm: 500, xs: 280 }}>
           <Typography fontSize={20} fontWeight={"bold"} textAlign="center" mb={3}>
             Submit a Trello Issue
-          </Typography>
+          </Typography>          
 
           <form onSubmit={handleSubmit(handleSubmitTicket)}>
             <Stack spacing={2}>
